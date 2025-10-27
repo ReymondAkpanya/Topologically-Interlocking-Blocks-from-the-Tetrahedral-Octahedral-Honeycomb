@@ -1,0 +1,370 @@
+verticesOfFaces_Kitten:=[[1, 2, 5], [1, 2, 7], [1, 3, 4], [1, 3, 7], [1, 4, 5], [2, 3, 7],
+[2, 3, 8], [2, 5, 6], [2, 6, 8], [3, 4, 6], [3, 6, 8], [4, 5, 6]];
+
+coordinates_Kitten:=[[0,1,1],[1,0,1],[1,1,0],[1,2,1],[1,1,2],[2,1,1],[0,0,0],[2,0,0]];
+
+verticesOfFaces_Shuriken:=[ [ 1, 2, 7 ], [ 1, 2, 17 ], [ 1, 7, 26 ], [ 1, 12, 26 ], [ 1, 4, 5 ], [ 1, 4, 12 ], [ 1, 5, 17 ], [ 2, 5, 17 ], [ 2, 5, 18 ], [ 2, 6, 8 ],
+  [ 2, 6, 18 ], [ 2, 7, 10 ], [ 2, 8, 10 ], [ 3, 6, 8 ], [ 3, 6, 11 ], [ 7, 14, 26 ], [ 3, 8, 13 ], [ 3, 11, 13 ], [ 12, 14, 26 ], [ 4, 5, 6 ], [ 4, 6, 11 ], [ 4, 11, 19 ],
+  [ 4, 12, 20 ], [ 4, 15, 19 ], [ 4, 15, 20 ], [ 5, 6, 18 ], [ 7, 9, 14 ], [ 7, 9, 22 ], [ 7, 10, 22 ], [ 8, 9, 13 ], [ 8, 9, 21 ], [ 8, 10, 21 ],
+  [ 9, 10, 21 ], [ 9, 10, 22 ], [ 9, 13, 23 ], [ 9, 14, 23 ], [ 11, 13, 16 ], [ 11, 15, 16 ], [ 11, 15, 19 ], [ 12, 14, 16 ], [ 12, 15, 16 ], [ 12, 15, 20 ], [ 13, 16, 24 ],
+  [ 13, 23, 24 ], [ 14, 16, 25 ], [ 14, 23, 25 ], [ 16, 23, 24 ], [ 16, 23, 25 ] ];
+
+
+coordinates_Shuriken:=[ [ 1, 0, 1 ], [ 1, 1, 0 ], [ 2, 1, 1 ], [ 1, 1, 2 ], [ 0, 1, 1 ], [ 1, 2, 1 ], [ 2, 0, 0 ], [ 2, 2, 0 ], [ 3, 1, 0 ],
+  [ 2, 1, -1 ], [ 2, 2, 2 ], [ 2, 0, 2 ], [ 3, 2, 1 ], [ 3, 0, 1 ], [ 2, 1, 3 ], [ 3, 1, 2 ], [ 0, 0, 0 ], [ 0, 2, 0 ], [ 1, 2, 3 ], [ 1, 0, 3 ], [ 3, 2, -1 ],
+  [ 3, 0, -1 ], [ 4, 1, 1 ], [ 4, 2, 2 ], [ 4, 0, 2 ], [ 2, 1, 1 ] ];
+
+
+verticesOfFaces_Cushion:=[ [ 1, 2, 5 ], [ 1, 2, 7 ], [ 1, 3, 4 ], [ 1, 3, 7 ], [ 1, 4, 9 ], 
+[ 1, 5, 9 ], [ 2, 3, 7 ], [ 2, 3, 8 ], [ 2, 5, 6 ], [ 2, 6, 8 ], 
+[ 3, 4, 6 ], [ 3, 6, 8 ], [ 4, 5, 9 ], [ 4, 5, 10 ], [ 4, 6, 10 ], 
+[ 5, 6, 10 ] ];
+
+coordinates_Cushion:=[ [ 0, 1, 1 ], [ 1, 0, 1 ], [ 1, 1, 0 ], 
+[ 1, 2, 1 ], [ 1, 1, 2 ], [ 2, 1, 1 ], [ 0, 0, 0 ], [ 2, 0, 0 ], 
+[ 0, 2, 2 ], [ 2, 2, 2 ] ];
+
+
+
+## code to generate n-cushion 
+
+v1:=[0,1,1];
+v2:=[1,0,1];
+v3:=[1,1,0];
+
+O:=Octahedron();
+otO:=rec();
+#otO.vertexCoordinates3D:=[[1,0,1],[ 1, 1, 0 ], [ 2, 1, 1 ],[ 1, 1, 2 ], [ 0, 1, 1 ],[ 1, 2, 1 ]];
+otO.vertexCoordinates3D:=[v1,v2,v3,v1+v3,v1+v2,v2+v3];
+otO.order:=[[1,2,3,4,5,6]];
+otO.spere:=false;
+
+T:=Tetrahedron();
+otT:=rec();
+#otT.vertexCoordinates3D:=[[2,0,0],[2,1,1],[1,0,1],[1,1,0]];
+otT.vertexCoordinates3D:=[[0,0,0],[0,0,0]+v1,[0,0,0]+v2,[0,0,0]+v3];
+otT.order:=[[1,2,3,4]];
+otT.spere:=false;
+
+
+################################################################################
+############################# helper function ##################################
+symdif:=function(A,B)
+return Difference(Union(A,B),Intersection(A,B));
+end;
+Copy:=function(ot1)
+	local g,ot2;
+	ot2:=rec();
+	if IsBound(ot1.order) then 
+		ot2.order:=List(ot1.order,g->ShallowCopy(g));
+	fi;
+	if IsBound(ot1.vertexCoordinates3D) then 
+		ot2.vertexCoordinates3D:=List(ot1.vertexCoordinates3D,g->ShallowCopy(g));
+	fi;
+	if IsBound(ot1.sphere) then 
+		ot2.sphere:=ShallowCopy(ot1.sphere);
+	fi;
+	return ot2;
+end;
+eps:=function(x)
+
+	if Sqrt(x[1]^2+x[2]^2+x[3]^2)< 0.001 then 
+		return true;	
+	else 
+		return false;
+	fi;
+end;
+help_norm:=function(x)
+	return Sqrt(x[1]^2+x[2]^2+x[3]^2);##
+end;
+help_eps:=function(x)
+	return x*1.<0.001;
+end;	
+
+adt:=function(S,fac,Ot)
+	local g,vof,v,oct,nv,temp,tvert,t,lv,vert,inter,i1,i2,nvof,i,tet,ot;
+	##only if face belongs to an octa 
+	if not  IsBound(Ot.sphere) then 
+		Ot.sphere:=false;
+	else 
+		Ot.sphere:=false;
+	fi;
+	ot:=Copy(Ot);
+	if IsInt(fac) then
+	    vof:=VerticesOfFace(S,fac);
+	else
+	    vof:=fac;
+ 		fac:=Position(VerticesOfFaces(S),fac);
+	fi;
+
+	oct:=Filtered(ot.order,g->IsSubset(g,vof))[1];	
+	nv:=-1;
+	for i in [[1,2],[1,3],[2,3]] do 
+
+		nvof:=Filtered(VerticesOfFaces(S),g->IsSubset(g,[vof[i[1]],vof[i[2]]]));
+		nvof:=Filtered(nvof,g->g<>vof)[1];
+		if IsSubset(oct,nvof) then 
+			nv:=Difference(nvof,vof)[1];
+			i1:=i[1];
+			i2:=i[2];			
+		fi;
+	od;
+	if nv=-1 then 
+		for i in [[1,2],[1,3],[2,3]] do 
+
+			tet:=Filtered(ot.order,g->Length(g)=4);
+			tet:=Filtered(tet,g->IsSubset(g,[vof[i[1]],vof[i[2]]]));
+			if tet<>[] then  
+				nv:=Intersection(oct,tet[1]);
+				nv:=Difference(nv,vof)[1];
+				i1:=i[1];
+				i2:=i[2];
+			fi;
+		od;
+
+	fi;
+	temp:=ot.vertexCoordinates3D[vof[i1]]+1/2*(ot.vertexCoordinates3D[vof[i2]]-	ot.vertexCoordinates3D[vof[i1]]);
+	temp:=2*temp-ot.vertexCoordinates3D[nv];
+	v:=Filtered(Vertices(S),g->ot.vertexCoordinates3D[g]=temp);
+	
+	if v=[] or ot.sphere then
+	t:=Combinations(Union(VerticesOfFace(S,fac),[Maximum(Vertices(S))+1]),3);
+		if Length(Union(ot.order,Union(t)))<> Length(ot.order) then
+			Add(ot.order,Union(t));
+		fi;
+		S:=PolygonalComplexByVerticesInFaces(
+					symdif(VerticesOfFaces(S),t));	
+		ot.vertexCoordinates3D[Maximum(Vertices(S))]:=temp;
+	else
+		t:=Combinations(Union(VerticesOfFace(S,fac),v),3);
+		if Length(Union(ot.order,Union(t)))<> Length(ot.order) then
+			Add(ot.order,Union(t));
+		fi;
+		S:=PolygonalComplexByVerticesInFaces(
+		symdif(VerticesOfFaces(S),t));
+	fi;
+			
+	return [S,ot];
+end;
+#### in case old vertex vanishes dont add a new vertex overwrite the old one instead 
+### work on here after break -######
+ado:=function(S,fac,Ot)
+	local vof,g,l,ln,tet,nv,v,temp,VOF,i1,i2,j,n,pr,i,ot;
+	if not  IsBound(Ot.sphere) then 
+		Ot.sphere:=false;
+	else 
+		Ot.sphere:=false;
+	fi;
+	ot:=Copy(Ot);
+	if IsInt(fac) then
+	    vof:=VerticesOfFace(S,fac);
+	else
+	    vof:=fac;
+ 		fac:=Position(VerticesOfFaces(S),fac);
+	fi;
+	tet:=Filtered(ot.order,g->IsSubset(g,vof))[1];
+	l:=1;
+	n:=Maximum(Vertices(S));
+	ln:=[];
+	nv:=Difference(tet,vof)[1];
+	for i in [[2,3],[1,3],[1,2]] do 
+		i1:=i[1];
+		i2:=i[2];
+		j:=Difference([1,2,3],i)[1];
+		temp:=ot.vertexCoordinates3D[vof[i1]]
+		+1/2*(ot.vertexCoordinates3D[vof[i2]]-ot.vertexCoordinates3D[vof[i1]]);
+		temp:=2*temp-ot.vertexCoordinates3D[nv];
+		v:=Filtered(Vertices(S),g->ot.vertexCoordinates3D[g]=temp);
+		if v=[] or ot.sphere then
+			ot.vertexCoordinates3D[n+l]:=temp;
+			ln[j]:=n+l;
+			l:=l+1;
+		else
+			ln[j]:=v[1];
+		fi;
+	od;
+VOF:=[vof,Set([vof[1],vof[2],ln[3]]),Set([vof[2],vof[3],ln[1]]),Set([vof[1],vof[3],ln[2]]),Set([ln[1],ln[2],ln[3]]),
+Set([vof[1],ln[2],ln[3]]),Set([vof[2],ln[1],ln[3]]),Set([vof[3],ln[2],ln[1]])];
+	if Length(Union(ot.order,Union(vof,ln)))<> Length(ot.order) then
+		Add(ot.order,Union(vof,ln));
+	fi;
+
+	S:=PolygonalComplexByVerticesInFaces(symdif(VerticesOfFaces(S),VOF));	
+	return [S,ot];
+end;
+
+
+AddOctahedronByCoordinatesOfFaces:=function(S,ot,cof)
+	local g,h,face,vof,temp;
+	vof:=[];
+	for g in cof do
+		Add(vof,Filtered(Vertices(S),h->g=ot.vertexCoordinates3D[h])[1]);
+	od;
+	face:=Position(VerticesOfFaces(S),Set(vof));
+	temp:=ado(S,face,ot);
+	return [temp[1],temp[2]];
+end;	
+
+AddTetrahedronByCoordinatesOfFaces:=function(S,ot,cof)
+	local g,h,face,vof,temp;
+	vof:=[];
+	for g in cof do
+		Add(vof,Filtered(Vertices(S),h->g=ot.vertexCoordinates3D[h])[1]);
+	od;
+	face:=Position(VerticesOfFaces(S),Set(vof));
+	temp:=adt(S,face,ot);
+	return [temp[1],temp[2]];
+end;
+
+
+AddTetrahedronByCoordinates:=function(S,Ot,coor)
+	local g,n,l,v,i,j,k,temp,bij,vof,ot;
+	vof:=[[2,3,4],[1,3,4],[1,2,4],[1,2,3]];
+	l:=1;
+	n:=Maximum(Vertices(S));
+	bij:=[];
+	ot:=Copy(Ot);
+	for i in [1..4] do 
+		v:=Filtered(Vertices(S),g->coor[i]=ot.vertexCoordinates3D[g]);
+		if v<>[] then
+			bij[i]:=v[1];
+		else
+			bij[i]:=n+l;
+			ot.vertexCoordinates3D[n+l]:=coor[i];
+			l:=l+1;
+		fi;
+	od;
+	for j in [1..4] do
+		for k in [1,2,3] do 
+			vof[j][k]:=bij[vof[j][k]];
+		od;	
+	od;
+	vof:=List(vof,g->Set(g));
+	Add(ot.order,Union(vof));
+	temp:=symdif(VerticesOfFaces(S),vof);
+	S:=PolygonalComplexByVerticesInFaces(temp);
+	return [S,ot];
+end;
+
+
+AddOctahedronByCoordinates:=function(S,ot,coor)
+	local tcoor,g,n,l,v,i,j,k,m,temp,temp1,temp2,vof,bij;
+	### sort
+	tcoor:=List(coor,g->1.*g);
+	temp:=[tcoor[1]];
+	temp1:=List(tcoor,g->help_norm(tcoor[1]-g));
+	m:=Maximum(temp1);
+	j:=Filtered([1..6],g->help_eps(m-temp1[g]));
+	temp[6]:=tcoor[j[1]];
+	temp1:=List(Difference([2,3,4,5,6],j),g->tcoor[g]);
+
+	temp2:=List(temp1,g->help_norm(tcoor[1]-g));
+	m:=Maximum(temp2);
+	j:=Filtered([1..4],g->help_eps(m-temp2[g]));
+	temp[2]:=temp1[j[1]];
+	temp1:=Filtered(temp1,g->not eps(temp[2]-g));
+	
+	temp2:=List(temp1,g->help_norm(temp[2]-g));
+	m:=Maximum(temp2);
+	j:=Filtered([1..3],g->help_eps(m-temp2[g]));
+	temp[4]:=temp1[j[1]];
+	temp1:=Difference(tcoor,temp);
+	temp[3]:=temp1[1];
+	temp[5]:=temp1[2];
+	vof:=[[1,2,3],[1,3,4],[1,4,5],[1,2,5],[2,3,6],[3,4,6],[4,5,6],[2,5,6]];
+	l:=1;
+	n:=Maximum(Vertices(S));
+	bij:=[];
+	for i in [1..6] do 
+		v:=Filtered(Vertices(S),g->eps(temp[i]-ot.vertexCoordinates3D[g]));
+		if v<>[] then
+			bij[i]:=v[1];
+		else
+			bij[i]:=n+l;
+			ot.vertexCoordinates3D[n+l]:=List(temp[i],g->Rat(g));
+			l:=l+1;
+		fi;
+	od;
+	for j in [1..8] do
+		for k in [1,2,3] do 
+			vof[j][k]:=bij[vof[j][k]];
+		od;	
+	od;
+	vof:=List(vof,g->Set(g));
+	Add(ot.order,Union(vof));
+	temp:=symdif(VerticesOfFaces(S),vof);
+	S:=PolygonalComplexByVerticesInFaces(temp);
+	return [S,ot];
+end;
+
+
+
+
+
+
+
+
+StripInOctaTetraGitter:=function(n)
+	local g,i,temp2,faces,S,temp,vert,pr,v1,v2,nv1,nv2,ot,lo,lv,v,f,f2;
+	S:=Octahedron();
+	ot:=rec();
+	ot.vertexCoordinates3D:=[[ 1,0,1],[ 1, 1, 0 ], [ 2, 1, 1 ],
+				 [ 1, 1, 2 ], [ 0, 1, 1 ],[ 1, 2, 1 ] ];
+	ot.order:=[[1,2,3,4,5,6]];
+	for i in [2..n] do 
+##add two tetras
+		v1:=Filtered(ot.order[Length(ot.order)],
+					g->FaceDegreeOfVertex(S,g)=4)[1];
+		v2:=Filtered(NeighbourVerticesOfVertex(S,v1),
+					g->FaceDegreeOfVertex(S,g)=4)[1];
+		lo:=Length(ot.order);
+		f:=Filtered(Faces(S),
+		g->Intersection(VerticesOfFace(S,g),ot.order[lo])=VerticesOfFace(S,g));
+		f:=Filtered(f,g->IsSubset(VerticesOfFace(S,g),[v1,v2]));
+		f:=List(f,g->VerticesOfFace(S,g));
+		temp:=adt(S,Position(VerticesOfFaces(S),f[1]),ot);
+		S:=temp[1];
+		ot:=temp[2];
+		temp:=adt(S,Position(VerticesOfFaces(S),f[2]),ot);
+		S:=temp[1];
+		ot:=temp[2];
+## add octa
+		lo:=Length(ot.order);
+		lv:=Length(Vertices(S));
+		v:=Intersection(ot.order[lo],ot.order[lo-1]); 
+		v1:=v[1];
+		v2:=v[2];
+		f:=Filtered(Faces(S),
+			g->Length(Intersection(VerticesOfFace(S,g),ot.order[lo]))>=2);
+		f:=Filtered(f,
+			g->Length(Intersection(VerticesOfFace(S,g),ot.order[lo-1]))>=2);
+		temp:=ado(S,f[2],ot);
+		S:=temp[1];
+		ot:=temp[2];
+###
+	od;
+	return [S,ot];
+end;
+
+N_Cushion:=function(n)
+	local g,temp,S,vertices,facedeg,faces,ot;
+	temp:=StripInOctaTetraGitter(n);
+	S:=temp[1];
+	ot:=temp[2];
+	facedeg:=FaceDegreesOfVertices(S);
+	vertices:=Filtered(Vertices(S),g->facedeg[g]=4);
+	faces:=Filtered(VerticesOfFaces(S),g->Length(Intersection(g, vertices))=2);
+	for g in faces do 
+		temp:=adt(S,g,ot);
+		S:=temp[1];
+		ot:=temp[2];
+	od;
+	return temp;
+end;
+
+##constructing html files
+##temp:=N_Cushion(5);
+##DrawSurfaceToJavaScript(temp[1],"temp",temp[2]);
+
+
+
