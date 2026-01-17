@@ -1,5 +1,4 @@
-# Topologically Interlocking Blocks inside the
-Tetroctahedrille
+# Topologically Interlocking Blocks inside the Tetroctahedrille
 
 This repository contains additional data for the paper entitled "Topologically Interlocking Blocks inside the Tetroctahedrille" coauthored by Reymond Akpanya, Tom Goertzen and Alice C. Niemeyer (see https://arxiv.org/abs/2405.01944v1 for a temporary version).
 
